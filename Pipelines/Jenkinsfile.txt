@@ -1,0 +1,65 @@
+// Pipelines/Jenkinsfile
+pipeline {
+    agent any
+    
+    parameters {
+        string(name: 'NAME', description: 'Nombre del usuario')
+        string(name: 'LASTNAME', description: 'Apellido del usuario')
+        choice(name: 'DEPARTMENT', 
+               choices: ['contabilidad', 'finanzas', 'tecnologia'],
+               description: 'Departamento del usuario')
+    }
+
+    stages {
+        stage('Preparar Datos') {
+            steps {
+                script {
+                    // Combino nombre y apellido para el login
+                    env.LOGIN = "${params.NAME.toLowerCase()}${params.LASTNAME.toLowerCase()}"
+                    // Genero una contraseña temporal
+                    env.TEMP_PASSWORD = "Temp${Math.abs(new Random().nextInt(10000))}"
+                    echo "Login: ${env.LOGIN}"
+                    echo "Contraseña temporal: ${env.TEMP_PASSWORD}"
+                }
+            }
+        }
+        
+        stage('Crear Usuario') {
+            steps {
+                sh '''
+                    echo "Creando usuario $LOGIN"
+                    # Encripto la contraseña y creo el usuario
+                    ENCRYPTED_PASS=$(perl -e "print crypt(\\"$TEMP_PASSWORD\\", \\"salt\\")")
+                    sudo useradd -m -c "$NAME $LASTNAME" \
+                        -g "$DEPARTMENT" \
+                        -s /bin/bash \
+                        -p "$ENCRYPTED_PASS" \
+                        "$LOGIN" || { echo "Error al crear usuario"; exit 1; }
+                    
+                    echo "Haciendo que la contraseña expire"
+                    sudo passwd -e "$LOGIN" || { echo "Error al expirar contraseña"; exit 1; }
+                '''
+            }
+        }
+        
+        stage('Mostrar Resultado') {
+            steps {
+                echo "Usuario creado con éxito!"
+                echo "Login: ${env.LOGIN}"
+                echo "Contraseña: ${env.TEMP_PASSWORD}"
+                echo "Departamento: ${params.DEPARTMENT}"
+            }
+        }
+    }
+    
+    post {
+        success {
+            // Guardo las credenciales en un archivo
+            archiveArtifacts artifacts: 'result.txt', allowEmptyArchive: true
+            sh 'echo "Usuario: $LOGIN\\nContraseña: $TEMP_PASSWORD" > result.txt'
+        }
+        failure {
+            echo "Falló el pipeline, revisá los logs."
+        }
+    }
+}
