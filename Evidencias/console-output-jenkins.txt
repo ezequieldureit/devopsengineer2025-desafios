@@ -1,0 +1,82 @@
+Started by user Ezequiel Duré
+Obtained Pipelines/Jenkinsfile from git https://github.com/ezequieldureit/devopsengineer2025-desafios.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/Desafio1
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential Jenkins
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/Desafio1/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/ezequieldureit/devopsengineer2025-desafios.git # timeout=10
+Fetching upstream changes from https://github.com/ezequieldureit/devopsengineer2025-desafios.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --force --progress -- https://github.com/ezequieldureit/devopsengineer2025-desafios.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 0063fb329b2185ba3160c7ab28f96621cc36d125 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 0063fb329b2185ba3160c7ab28f96621cc36d125 # timeout=10
+Commit message: "Rename Jenkinsfile.txt to Jenkinsfile"
+First time build. Skipping changelog.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Preparar Datos)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+Login: pedroescamoso
+[Pipeline] echo
+Contraseña temporal: Temp1147
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Crear Usuario)
+[Pipeline] sh
++ echo Creando usuario pedroescamoso
+Creando usuario pedroescamoso
++ perl -e print crypt("Temp1147", "salt")
++ ENCRYPTED_PASS=saUNRIXOa9bJE
++ sudo useradd -m -c pedro escamoso -g contabilidad -s /bin/bash -p saUNRIXOa9bJE pedroescamoso
++ echo Haciendo que la contraseña expire
+Haciendo que la contraseña expire
++ sudo passwd -e pedroescamoso
+passwd: password changed.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Mostrar Resultado)
+[Pipeline] echo
+Usuario creado con éxito!
+[Pipeline] echo
+Login: pedroescamoso
+[Pipeline] echo
+Contraseña: Temp1147
+[Pipeline] echo
+Departamento: contabilidad
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] sh
++ echo Usuario: pedroescamoso\nContraseña: Temp1147
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
